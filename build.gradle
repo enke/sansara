@@ -8,9 +8,16 @@ targetCompatibility = JavaVersion.VERSION_1_8
 
 repositories {
     mavenCentral()
+
+    maven {
+        url "https://jitpack.io"
+    }
 }
 
 dependencies {
+    compile 'org.apache.logging.log4j:log4j-core:2.10.0'
+    compile 'com.github.enke:minecraft-protocol:1.0'
+    compile 'io.netty:netty-all:4.1.20.Final'
     compile 'org.jetbrains:annotations:15.0'
 
     testCompile 'org.mockito:mockito-core:2.3.0'
