@@ -17,8 +17,13 @@ public class NetworkSession extends SimpleChannelInboundHandler<PacketMessage> {
     }
 
     @Override
+    public void channelActive(final ChannelHandlerContext ctx) throws Exception {
+        logger.debug("New network connection from ip {}", ctx.channel().remoteAddress());
+    }
+
+    @Override
     protected void channelRead0(final ChannelHandlerContext ctx, final PacketMessage msg) throws Exception {
-        logger.debug("Received packet {}", msg);
+        logger.trace("Received packet {}", msg);
     }
 
 }
