@@ -7,6 +7,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import ru.enke.minecraft.protocol.ProtocolState;
 import ru.enke.minecraft.protocol.packet.PacketMessage;
+import ru.enke.sansara.Server;
 import ru.enke.sansara.network.handler.MessageHandler;
 import ru.enke.sansara.network.handler.MessageHandlerRegistry;
 
@@ -69,6 +70,14 @@ public class NetworkSession extends SimpleChannelInboundHandler<PacketMessage> {
                 logger.warn("Message {} missing handler", msg);
             }
         }
+    }
+
+    public void sendPacket(final PacketMessage msg) {
+        if(logger.isTraceEnabled()) {
+            logger.trace("Sending packet {}", msg);
+        }
+
+        channel.writeAndFlush(msg);
     }
 
     public SocketAddress getAddress() {

@@ -1,9 +1,10 @@
-package ru.enke.sansara.network.handler;
+package ru.enke.sansara.network.handler.handshake;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import ru.enke.minecraft.protocol.ProtocolState;
 import ru.enke.minecraft.protocol.packet.client.handshake.Handshake;
+import ru.enke.sansara.network.handler.MessageHandler;
 import ru.enke.sansara.network.session.NetworkSession;
 
 public class HandshakeHandler implements MessageHandler<Handshake> {
