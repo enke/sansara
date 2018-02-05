@@ -25,8 +25,10 @@ public class Session extends SimpleChannelInboundHandler<PacketMessage> {
     private final Queue<PacketMessage> messageQueue = new LinkedBlockingQueue<>();
     private final MessageHandlerRegistry messageHandlerRegistry;
     private final SessionRegistry sessionRegistry;
-    private ProtocolState state = ProtocolState.HANDSHAKE;
     private final Channel channel;
+
+    private ProtocolState state = ProtocolState.HANDSHAKE;
+    private String name;
 
     public Session(final Channel channel, final SessionRegistry sessionRegistry,
                    final MessageHandlerRegistry messageHandlerRegistry) {
@@ -85,6 +87,14 @@ public class Session extends SimpleChannelInboundHandler<PacketMessage> {
 
     public void setState(final ProtocolState state) {
         this.state = state;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(final String name) {
+        this.name = name;
     }
 
 }

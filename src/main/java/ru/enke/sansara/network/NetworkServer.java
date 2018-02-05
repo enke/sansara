@@ -7,11 +7,13 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import ru.enke.minecraft.protocol.codec.LengthCodec;
 import ru.enke.minecraft.protocol.codec.PacketCodec;
 import ru.enke.minecraft.protocol.packet.client.handshake.Handshake;
+import ru.enke.minecraft.protocol.packet.client.login.LoginStart;
 import ru.enke.minecraft.protocol.packet.client.status.PingRequest;
 import ru.enke.minecraft.protocol.packet.client.status.StatusRequest;
 import ru.enke.sansara.Server;
 import ru.enke.sansara.network.handler.handshake.HandshakeHandler;
 import ru.enke.sansara.network.handler.MessageHandlerRegistry;
+import ru.enke.sansara.network.handler.login.LoginStartHandler;
 import ru.enke.sansara.network.handler.status.PingRequestHandler;
 import ru.enke.sansara.network.handler.status.StatusRequestHandler;
 import ru.enke.sansara.network.session.Session;
@@ -31,6 +33,7 @@ public class NetworkServer {
         messageHandlerRegistry.registerHandler(Handshake.class, new HandshakeHandler());
         messageHandlerRegistry.registerHandler(StatusRequest.class, new StatusRequestHandler(server));
         messageHandlerRegistry.registerHandler(PingRequest.class, new PingRequestHandler());
+        messageHandlerRegistry.registerHandler(LoginStart.class, new LoginStartHandler());
     }
 
     public boolean bind(final int port) {
