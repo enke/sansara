@@ -2,6 +2,7 @@ package ru.enke.sansara.network.session;
 
 import io.netty.util.internal.ConcurrentSet;
 
+import java.util.Collections;
 import java.util.Set;
 
 public class NetworkSessionRegistry {
@@ -17,7 +18,7 @@ public class NetworkSessionRegistry {
     }
 
     public Set<NetworkSession> getSessions() {
-        return sessions;
+        return Collections.unmodifiableSet(sessions);
     }
 
 }
