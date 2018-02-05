@@ -7,7 +7,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import ru.enke.minecraft.protocol.ProtocolState;
 import ru.enke.minecraft.protocol.packet.PacketMessage;
-import ru.enke.sansara.Server;
 import ru.enke.sansara.network.handler.MessageHandler;
 import ru.enke.sansara.network.handler.MessageHandlerRegistry;
 
@@ -15,7 +14,7 @@ import java.net.SocketAddress;
 import java.util.Queue;
 import java.util.concurrent.LinkedBlockingQueue;
 
-public class NetworkSession extends SimpleChannelInboundHandler<PacketMessage> {
+public class Session extends SimpleChannelInboundHandler<PacketMessage> {
 
     public static final String LENGTH_CODEC_NAME = "length";
     public static final String PACKET_CODEC_NAME = "packet";
@@ -25,12 +24,12 @@ public class NetworkSession extends SimpleChannelInboundHandler<PacketMessage> {
 
     private final Queue<PacketMessage> messageQueue = new LinkedBlockingQueue<>();
     private final MessageHandlerRegistry messageHandlerRegistry;
-    private final NetworkSessionRegistry sessionRegistry;
+    private final SessionRegistry sessionRegistry;
     private ProtocolState state = ProtocolState.HANDSHAKE;
     private final Channel channel;
 
-    public NetworkSession(final Channel channel, final NetworkSessionRegistry sessionRegistry,
-                          final MessageHandlerRegistry messageHandlerRegistry) {
+    public Session(final Channel channel, final SessionRegistry sessionRegistry,
+                   final MessageHandlerRegistry messageHandlerRegistry) {
         this.channel = channel;
         this.sessionRegistry = sessionRegistry;
         this.messageHandlerRegistry = messageHandlerRegistry;

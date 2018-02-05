@@ -1,10 +1,10 @@
 package ru.enke.sansara.network.handler;
 
 import ru.enke.minecraft.protocol.packet.PacketMessage;
-import ru.enke.sansara.network.session.NetworkSession;
+import ru.enke.sansara.network.session.Session;
 
 public interface MessageHandler<T extends PacketMessage> {
 
-    void handle(final NetworkSession session, final T msg);
+    void handle(final Session session, final T msg);
 
 }

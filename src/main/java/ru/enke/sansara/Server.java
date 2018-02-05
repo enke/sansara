@@ -3,8 +3,8 @@ package ru.enke.sansara;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import ru.enke.sansara.network.NetworkServer;
-import ru.enke.sansara.network.session.NetworkSession;
-import ru.enke.sansara.network.session.NetworkSessionRegistry;
+import ru.enke.sansara.network.session.Session;
+import ru.enke.sansara.network.session.SessionRegistry;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -22,7 +22,7 @@ public class Server implements Runnable {
     private static final Logger logger = LogManager.getLogger();
 
     private final ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor(r -> new Thread(r, "Game Thread"));
-    private final NetworkSessionRegistry sessionRegistry = new NetworkSessionRegistry();
+    private final SessionRegistry sessionRegistry = new SessionRegistry();
     private final NetworkServer networkServer = new NetworkServer(this, sessionRegistry);
     private final String favicon;
 
@@ -63,7 +63,7 @@ public class Server implements Runnable {
 
     @Override
     public void run() {
-        for(final NetworkSession session : sessionRegistry.getSessions()) {
+        for(final Session session : sessionRegistry.getSessions()) {
             session.handleIncomingPackets();
         }
     }

@@ -10,7 +10,7 @@ import ru.enke.minecraft.protocol.packet.data.status.Version;
 import ru.enke.minecraft.protocol.packet.server.status.StatusResponse;
 import ru.enke.sansara.Server;
 import ru.enke.sansara.network.handler.MessageHandler;
-import ru.enke.sansara.network.session.NetworkSession;
+import ru.enke.sansara.network.session.Session;
 
 public class StatusRequestHandler implements MessageHandler<StatusRequest> {
 
@@ -21,7 +21,7 @@ public class StatusRequestHandler implements MessageHandler<StatusRequest> {
     }
 
     @Override
-    public void handle(final NetworkSession session, final StatusRequest statusRequest) {
+    public void handle(final Session session, final StatusRequest statusRequest) {
         final Version version = new Version(Server.GAME_VERSION, Protocol.VERSION);
 
         // TODO: Add players online.

@@ -14,8 +14,8 @@ import ru.enke.sansara.network.handler.handshake.HandshakeHandler;
 import ru.enke.sansara.network.handler.MessageHandlerRegistry;
 import ru.enke.sansara.network.handler.status.PingRequestHandler;
 import ru.enke.sansara.network.handler.status.StatusRequestHandler;
-import ru.enke.sansara.network.session.NetworkSession;
-import ru.enke.sansara.network.session.NetworkSessionRegistry;
+import ru.enke.sansara.network.session.Session;
+import ru.enke.sansara.network.session.SessionRegistry;
 
 import static ru.enke.minecraft.protocol.ProtocolSide.SERVER;
 
@@ -23,9 +23,9 @@ public class NetworkServer {
 
     private final EventLoopGroup eventLoopGroup = new NioEventLoopGroup(4);
     private final MessageHandlerRegistry messageHandlerRegistry = new MessageHandlerRegistry();
-    private final NetworkSessionRegistry sessionRegistry;
+    private final SessionRegistry sessionRegistry;
 
-    public NetworkServer(final Server server, final NetworkSessionRegistry sessionRegistry) {
+    public NetworkServer(final Server server, final SessionRegistry sessionRegistry) {
         this.sessionRegistry = sessionRegistry;
 
         messageHandlerRegistry.registerHandler(Handshake.class, new HandshakeHandler());
@@ -44,9 +44,9 @@ public class NetworkServer {
                     protected void initChannel(final Channel channel) throws Exception {
                         final ChannelPipeline pipeline = channel.pipeline();
 
-                        pipeline.addLast(NetworkSession.LENGTH_CODEC_NAME, new LengthCodec());
-                        pipeline.addLast(NetworkSession.PACKET_CODEC_NAME, new PacketCodec(SERVER, false, false, null));
-                        pipeline.addLast(NetworkSession.SESSION_HANDLER_NAME, new NetworkSession(channel, sessionRegistry, messageHandlerRegistry));
+                        pipeline.addLast(Session.LENGTH_CODEC_NAME, new LengthCodec());
+                        pipeline.addLast(Session.PACKET_CODEC_NAME, new PacketCodec(SERVER, false, false, null));
+                        pipeline.addLast(Session.SESSION_HANDLER_NAME, new Session(channel, sessionRegistry, messageHandlerRegistry));
                     }
                 })
                 .bind(port)

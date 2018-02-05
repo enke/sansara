@@ -5,19 +5,19 @@ import io.netty.util.internal.ConcurrentSet;
 import java.util.Collections;
 import java.util.Set;
 
-public class NetworkSessionRegistry {
+public class SessionRegistry {
 
-    private final Set<NetworkSession> sessions = new ConcurrentSet<>();
+    private final Set<Session> sessions = new ConcurrentSet<>();
 
-    void addSession(final NetworkSession session) {
+    void addSession(final Session session) {
         sessions.add(session);
     }
 
-    void removeSession(final NetworkSession session) {
+    void removeSession(final Session session) {
         sessions.remove(session);
     }
 
-    public Set<NetworkSession> getSessions() {
+    public Set<Session> getSessions() {
         return Collections.unmodifiableSet(sessions);
     }
 
