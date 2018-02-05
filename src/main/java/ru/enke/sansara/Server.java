@@ -34,14 +34,14 @@ public class Server implements Runnable {
     }
 
     private static String readServerIcon() throws IOException {
-            final Path path = Paths.get("server-icon.png");
+        final Path path = Paths.get("server-icon.png");
 
-            if(!Files.exists(path)) {
-                return null;
-            }
+        if(!Files.exists(path)) {
+            return null;
+        }
 
-            final byte[] bytes = Files.readAllBytes(path);
-            return "data:image/png;base64," + Base64.getEncoder().encodeToString(bytes);
+        final byte[] bytes = Files.readAllBytes(path);
+        return "data:image/png;base64," + Base64.getEncoder().encodeToString(bytes);
     }
 
     public Server(final String favicon) {
