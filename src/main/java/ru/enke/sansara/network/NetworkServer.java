@@ -33,7 +33,7 @@ public class NetworkServer {
         messageHandlerRegistry.registerHandler(Handshake.class, new HandshakeHandler());
         messageHandlerRegistry.registerHandler(StatusRequest.class, new StatusRequestHandler(server));
         messageHandlerRegistry.registerHandler(PingRequest.class, new PingRequestHandler());
-        messageHandlerRegistry.registerHandler(LoginStart.class, new LoginStartHandler());
+        messageHandlerRegistry.registerHandler(LoginStart.class, new LoginStartHandler(server));
     }
 
     public boolean bind(final int port) {

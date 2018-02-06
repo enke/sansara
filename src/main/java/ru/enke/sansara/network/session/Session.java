@@ -6,7 +6,10 @@ import io.netty.channel.SimpleChannelInboundHandler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import ru.enke.minecraft.protocol.ProtocolState;
+import ru.enke.minecraft.protocol.codec.CompressionCodec;
 import ru.enke.minecraft.protocol.packet.PacketMessage;
+import ru.enke.minecraft.protocol.packet.server.login.LoginSetCompression;
+import ru.enke.sansara.login.LoginProfile;
 import ru.enke.sansara.network.handler.MessageHandler;
 import ru.enke.sansara.network.handler.MessageHandlerRegistry;
 
@@ -17,6 +20,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 public class Session extends SimpleChannelInboundHandler<PacketMessage> {
 
     public static final String LENGTH_CODEC_NAME = "length";
+    public static final String COMPRESSION_CODEC_NAME = "compression";
     public static final String PACKET_CODEC_NAME = "packet";
     public static final String SESSION_HANDLER_NAME = "session";
 
@@ -28,7 +32,7 @@ public class Session extends SimpleChannelInboundHandler<PacketMessage> {
     private final Channel channel;
 
     private ProtocolState state = ProtocolState.HANDSHAKE;
-    private String name;
+    private LoginProfile profile;
 
     public Session(final Channel channel, final SessionRegistry sessionRegistry,
                    final MessageHandlerRegistry messageHandlerRegistry) {
@@ -73,6 +77,17 @@ public class Session extends SimpleChannelInboundHandler<PacketMessage> {
         }
     }
 
+    public void joinGame(final LoginProfile profile) {
+        // Finalize login.
+        sendPacket(new LoginSetCompression(CompressionCodec.DEFAULT_COMPRESSION_THRESHOLD));
+        setCompression(CompressionCodec.DEFAULT_COMPRESSION_THRESHOLD);
+        setState(ProtocolState.GAME);
+    }
+
+    public void setCompression(int threshold) {
+        channel.pipeline().addBefore(SESSION_HANDLER_NAME, COMPRESSION_CODEC_NAME, new CompressionCodec(threshold));
+    }
+
     public void sendPacket(final PacketMessage msg) {
         if(logger.isTraceEnabled()) {
             logger.trace("Sending packet {}", msg);
@@ -89,12 +104,8 @@ public class Session extends SimpleChannelInboundHandler<PacketMessage> {
         this.state = state;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(final String name) {
-        this.name = name;
+    public LoginProfile getProfile() {
+        return profile;
     }
 
 }
