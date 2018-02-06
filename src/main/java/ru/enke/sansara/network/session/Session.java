@@ -9,6 +9,7 @@ import ru.enke.minecraft.protocol.ProtocolState;
 import ru.enke.minecraft.protocol.codec.CompressionCodec;
 import ru.enke.minecraft.protocol.packet.PacketMessage;
 import ru.enke.minecraft.protocol.packet.server.login.LoginSetCompression;
+import ru.enke.minecraft.protocol.packet.server.login.LoginSuccess;
 import ru.enke.sansara.login.LoginProfile;
 import ru.enke.sansara.network.handler.MessageHandler;
 import ru.enke.sansara.network.handler.MessageHandlerRegistry;
@@ -81,10 +82,14 @@ public class Session extends SimpleChannelInboundHandler<PacketMessage> {
         // Finalize login.
         sendPacket(new LoginSetCompression(CompressionCodec.DEFAULT_COMPRESSION_THRESHOLD));
         setCompression(CompressionCodec.DEFAULT_COMPRESSION_THRESHOLD);
+        sendPacket(new LoginSuccess(profile.getId().toString(), profile.getName()));
+
         setState(ProtocolState.GAME);
+        logger.info("Player {} joined game", profile.getName());
     }
 
     public void setCompression(int threshold) {
+        logger.trace("Enable compression with {} threshold", threshold);
         channel.pipeline().addBefore(SESSION_HANDLER_NAME, COMPRESSION_CODEC_NAME, new CompressionCodec(threshold));
     }
 

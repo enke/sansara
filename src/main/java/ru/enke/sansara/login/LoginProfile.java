@@ -6,7 +6,7 @@ import java.util.UUID;
 
 public class LoginProfile {
 
-    private final UUID uuid;
+    private final UUID id;
     private final String name;
     private final Map<String, LoginProperty> properties;
 
@@ -14,14 +14,14 @@ public class LoginProfile {
         this(uuid, name, Collections.emptyMap());
     }
 
-    public LoginProfile(final UUID uuid, final String name, final Map<String, LoginProperty> properties) {
-        this.uuid = uuid;
+    public LoginProfile(final UUID id, final String name, final Map<String, LoginProperty> properties) {
+        this.id = id;
         this.name = name;
         this.properties = properties;
     }
 
-    public UUID getUuid() {
-        return uuid;
+    public UUID getId() {
+        return id;
     }
 
     public String getName() {
