@@ -29,7 +29,7 @@ public class Server implements Runnable {
 
     public static void main(final String[] args) throws IOException {
         final String favicon = readServerIcon();
-        final boolean onlineMode = true;
+        final boolean onlineMode = false;
 
         final Server server = new Server(favicon, onlineMode);
         server.start();

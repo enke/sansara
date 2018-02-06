@@ -19,7 +19,7 @@ public class LoginStartHandler implements MessageHandler<LoginStart> {
     @Override
     public void handle(final Session session, final LoginStart loginStart) {
         if(server.isOnlineMode()) {
-
+           // TODO: Add online login.
         } else {
             session.joinGame(new LoginProfile(UUID.randomUUID(), loginStart.getUsername()));
         }

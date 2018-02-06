@@ -6,7 +6,6 @@ import io.netty.channel.SimpleChannelInboundHandler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
-import ru.enke.minecraft.protocol.ProtocolState;
 import ru.enke.minecraft.protocol.codec.CompressionCodec;
 import ru.enke.minecraft.protocol.packet.PacketMessage;
 import ru.enke.minecraft.protocol.packet.server.login.LoginSetCompression;
@@ -87,7 +86,7 @@ public class Session extends SimpleChannelInboundHandler<PacketMessage> {
 
     private void setCompression(final int threshold) {
         sendPacket(new LoginSetCompression(threshold));
-        channel.pipeline().addBefore(SESSION_HANDLER_NAME, COMPRESSION_CODEC_NAME, new CompressionCodec(threshold));
+        channel.pipeline().addBefore(PACKET_CODEC_NAME, COMPRESSION_CODEC_NAME, new CompressionCodec(threshold));
         logger.trace("Enable compression with {} threshold", threshold);
     }
 
