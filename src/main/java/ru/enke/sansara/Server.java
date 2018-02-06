@@ -24,12 +24,14 @@ public class Server implements Runnable {
     private final ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor(r -> new Thread(r, "Game Thread"));
     private final SessionRegistry sessionRegistry = new SessionRegistry();
     private final NetworkServer networkServer = new NetworkServer(this, sessionRegistry);
+    private final boolean onlineMode;
     private final String favicon;
 
     public static void main(final String[] args) throws IOException {
         final String favicon = readServerIcon();
+        final boolean onlineMode = false;
 
-        final Server server = new Server(favicon);
+        final Server server = new Server(favicon, onlineMode);
         server.start();
     }
 
@@ -44,8 +46,9 @@ public class Server implements Runnable {
         return "data:image/png;base64," + Base64.getEncoder().encodeToString(bytes);
     }
 
-    public Server(final String favicon) {
+    private Server(final String favicon, final boolean onlineMode) {
         this.favicon = favicon;
+        this.onlineMode = onlineMode;
     }
 
     private void start() {
@@ -70,6 +73,10 @@ public class Server implements Runnable {
 
     public String getFavicon() {
         return favicon;
+    }
+
+    public boolean isOnlineMode() {
+        return onlineMode;
     }
 
 }

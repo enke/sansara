@@ -5,8 +5,12 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import ru.enke.minecraft.protocol.ProtocolState;
+import org.jetbrains.annotations.Nullable;
+import ru.enke.minecraft.protocol.codec.CompressionCodec;
 import ru.enke.minecraft.protocol.packet.PacketMessage;
+import ru.enke.minecraft.protocol.packet.server.login.LoginSetCompression;
+import ru.enke.minecraft.protocol.packet.server.login.LoginSuccess;
+import ru.enke.sansara.login.LoginProfile;
 import ru.enke.sansara.network.handler.MessageHandler;
 import ru.enke.sansara.network.handler.MessageHandlerRegistry;
 
@@ -17,6 +21,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 public class Session extends SimpleChannelInboundHandler<PacketMessage> {
 
     public static final String LENGTH_CODEC_NAME = "length";
+    public static final String COMPRESSION_CODEC_NAME = "compression";
     public static final String PACKET_CODEC_NAME = "packet";
     public static final String SESSION_HANDLER_NAME = "session";
 
@@ -25,8 +30,8 @@ public class Session extends SimpleChannelInboundHandler<PacketMessage> {
     private final Queue<PacketMessage> messageQueue = new LinkedBlockingQueue<>();
     private final MessageHandlerRegistry messageHandlerRegistry;
     private final SessionRegistry sessionRegistry;
-    private ProtocolState state = ProtocolState.HANDSHAKE;
     private final Channel channel;
+    private LoginProfile profile;
 
     public Session(final Channel channel, final SessionRegistry sessionRegistry,
                    final MessageHandlerRegistry messageHandlerRegistry) {
@@ -71,6 +76,20 @@ public class Session extends SimpleChannelInboundHandler<PacketMessage> {
         }
     }
 
+    public void joinGame(final LoginProfile profile) {
+        // Finalize login.
+        setCompression(CompressionCodec.DEFAULT_COMPRESSION_THRESHOLD);
+        sendPacket(new LoginSuccess(profile.getId().toString(), profile.getName()));
+
+        logger.info("Player {} joined game", profile.getName());
+    }
+
+    private void setCompression(final int threshold) {
+        sendPacket(new LoginSetCompression(threshold));
+        channel.pipeline().addBefore(PACKET_CODEC_NAME, COMPRESSION_CODEC_NAME, new CompressionCodec(threshold));
+        logger.trace("Enable compression with {} threshold", threshold);
+    }
+
     public void sendPacket(final PacketMessage msg) {
         if(logger.isTraceEnabled()) {
             logger.trace("Sending packet {}", msg);
@@ -83,8 +102,9 @@ public class Session extends SimpleChannelInboundHandler<PacketMessage> {
         return channel.remoteAddress();
     }
 
-    public void setState(final ProtocolState state) {
-        this.state = state;
+    @Nullable
+    public LoginProfile getProfile() {
+        return profile;
     }
 
 }
