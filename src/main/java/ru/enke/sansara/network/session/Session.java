@@ -5,6 +5,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.Nullable;
 import ru.enke.minecraft.protocol.ProtocolState;
 import ru.enke.minecraft.protocol.codec.CompressionCodec;
 import ru.enke.minecraft.protocol.packet.PacketMessage;
@@ -31,8 +32,6 @@ public class Session extends SimpleChannelInboundHandler<PacketMessage> {
     private final MessageHandlerRegistry messageHandlerRegistry;
     private final SessionRegistry sessionRegistry;
     private final Channel channel;
-
-    private ProtocolState state = ProtocolState.HANDSHAKE;
     private LoginProfile profile;
 
     public Session(final Channel channel, final SessionRegistry sessionRegistry,
@@ -80,17 +79,16 @@ public class Session extends SimpleChannelInboundHandler<PacketMessage> {
 
     public void joinGame(final LoginProfile profile) {
         // Finalize login.
-        sendPacket(new LoginSetCompression(CompressionCodec.DEFAULT_COMPRESSION_THRESHOLD));
         setCompression(CompressionCodec.DEFAULT_COMPRESSION_THRESHOLD);
         sendPacket(new LoginSuccess(profile.getId().toString(), profile.getName()));
 
-        setState(ProtocolState.GAME);
         logger.info("Player {} joined game", profile.getName());
     }
 
-    public void setCompression(int threshold) {
-        logger.trace("Enable compression with {} threshold", threshold);
+    private void setCompression(final int threshold) {
+        sendPacket(new LoginSetCompression(threshold));
         channel.pipeline().addBefore(SESSION_HANDLER_NAME, COMPRESSION_CODEC_NAME, new CompressionCodec(threshold));
+        logger.trace("Enable compression with {} threshold", threshold);
     }
 
     public void sendPacket(final PacketMessage msg) {
@@ -105,10 +103,7 @@ public class Session extends SimpleChannelInboundHandler<PacketMessage> {
         return channel.remoteAddress();
     }
 
-    public void setState(final ProtocolState state) {
-        this.state = state;
-    }
-
+    @Nullable
     public LoginProfile getProfile() {
         return profile;
     }
