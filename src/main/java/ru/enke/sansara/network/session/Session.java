@@ -14,9 +14,12 @@ import ru.enke.minecraft.protocol.packet.data.game.WorldType;
 import ru.enke.minecraft.protocol.packet.server.game.JoinGame;
 import ru.enke.minecraft.protocol.packet.server.login.LoginSetCompression;
 import ru.enke.minecraft.protocol.packet.server.login.LoginSuccess;
+import ru.enke.sansara.Server;
+import ru.enke.sansara.World;
 import ru.enke.sansara.login.LoginProfile;
 import ru.enke.sansara.network.handler.MessageHandler;
 import ru.enke.sansara.network.handler.MessageHandlerRegistry;
+import ru.enke.sansara.player.Player;
 
 import java.net.SocketAddress;
 import java.util.Queue;
@@ -35,11 +38,13 @@ public class Session extends SimpleChannelInboundHandler<PacketMessage> {
     private final MessageHandlerRegistry messageHandlerRegistry;
     private final SessionRegistry sessionRegistry;
     private final Channel channel;
-    private LoginProfile profile;
+    private final Server server;
+    private Player player;
 
-    public Session(final Channel channel, final SessionRegistry sessionRegistry,
+    public Session(final Channel channel, final Server server, final SessionRegistry sessionRegistry,
                    final MessageHandlerRegistry messageHandlerRegistry) {
         this.channel = channel;
+        this.server = server;
         this.sessionRegistry = sessionRegistry;
         this.messageHandlerRegistry = messageHandlerRegistry;
     }
@@ -54,6 +59,12 @@ public class Session extends SimpleChannelInboundHandler<PacketMessage> {
     public void channelInactive(final ChannelHandlerContext ctx) throws Exception {
         logger.debug("Disconnected {}", getAddress());
         sessionRegistry.removeSession(this);
+
+        if(player != null) {
+            final World world = player.getWorld();
+            world.removePlayer(player);
+            server.removePlayer(player);
+        }
     }
 
     @Override
@@ -87,7 +98,13 @@ public class Session extends SimpleChannelInboundHandler<PacketMessage> {
 
         logger.info("Player {} joined game", profile.getName());
 
-        sendPacket(new JoinGame(1, GameMode.SURVIVAL, 1, Difficulty.NORMAL, 100, WorldType.DEFAULT, true));
+        final World world = server.getWorlds().iterator().next();
+
+        player = new Player(1, this, world, profile);
+        server.addPlayer(player);
+        world.addPlayer(player);
+
+        sendPacket(new JoinGame(player.getId(), GameMode.SURVIVAL, 1, Difficulty.NORMAL, 100, WorldType.DEFAULT, true));
     }
 
     private void setCompression(final int threshold) {
@@ -109,8 +126,8 @@ public class Session extends SimpleChannelInboundHandler<PacketMessage> {
     }
 
     @Nullable
-    public LoginProfile getProfile() {
-        return profile;
+    public Player getPlayer() {
+        return player;
     }
 
 }
