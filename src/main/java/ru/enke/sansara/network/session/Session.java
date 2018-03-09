@@ -8,6 +8,10 @@ import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 import ru.enke.minecraft.protocol.codec.CompressionCodec;
 import ru.enke.minecraft.protocol.packet.PacketMessage;
+import ru.enke.minecraft.protocol.packet.data.game.Difficulty;
+import ru.enke.minecraft.protocol.packet.data.game.GameMode;
+import ru.enke.minecraft.protocol.packet.data.game.WorldType;
+import ru.enke.minecraft.protocol.packet.server.game.JoinGame;
 import ru.enke.minecraft.protocol.packet.server.login.LoginSetCompression;
 import ru.enke.minecraft.protocol.packet.server.login.LoginSuccess;
 import ru.enke.sansara.login.LoginProfile;
@@ -82,6 +86,8 @@ public class Session extends SimpleChannelInboundHandler<PacketMessage> {
         sendPacket(new LoginSuccess(profile.getId().toString(), profile.getName()));
 
         logger.info("Player {} joined game", profile.getName());
+
+        sendPacket(new JoinGame(1, GameMode.SURVIVAL, 1, Difficulty.NORMAL, 100, WorldType.DEFAULT, true));
     }
 
     private void setCompression(final int threshold) {
