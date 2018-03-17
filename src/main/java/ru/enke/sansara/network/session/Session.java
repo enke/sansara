@@ -106,7 +106,7 @@ public class Session extends SimpleChannelInboundHandler<PacketMessage> {
         server.addPlayer(player);
         world.addPlayer(player);
 
-        sendPacket(new JoinGame(player.getId(), GameMode.SURVIVAL, 1, Difficulty.NORMAL, 100, WorldType.DEFAULT, true));
+        sendPacket(new JoinGame(player.getId(), GameMode.SURVIVAL, 0, Difficulty.NORMAL, 100, WorldType.DEFAULT, true));
         sendPacket(new SpawnPosition(world.getSpawnPosition()));
 
         sendPacket(new ServerPlayerPositionLook(0, 63, 0, 0, 0, 0, 1));
