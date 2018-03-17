@@ -27,7 +27,6 @@ public class Server extends PlayerRegistry implements Runnable {
     private final ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor(r -> new Thread(r, "Game Thread"));
     private final SessionRegistry sessionRegistry = new SessionRegistry();
     private final NetworkServer networkServer = new NetworkServer(this, sessionRegistry);
-    private final Map<UUID, Player> players = new HashMap<>();
     private final Map<String, World> worlds;
     private final boolean onlineMode;
     private final String favicon;
