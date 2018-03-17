@@ -13,6 +13,7 @@ import ru.enke.minecraft.protocol.packet.data.game.GameMode;
 import ru.enke.minecraft.protocol.packet.data.game.WorldType;
 import ru.enke.minecraft.protocol.packet.server.game.JoinGame;
 import ru.enke.minecraft.protocol.packet.server.game.SpawnPosition;
+import ru.enke.minecraft.protocol.packet.server.game.player.ServerPlayerPositionLook;
 import ru.enke.minecraft.protocol.packet.server.login.LoginSetCompression;
 import ru.enke.minecraft.protocol.packet.server.login.LoginSuccess;
 import ru.enke.sansara.Server;
@@ -107,6 +108,8 @@ public class Session extends SimpleChannelInboundHandler<PacketMessage> {
 
         sendPacket(new JoinGame(player.getId(), GameMode.SURVIVAL, 1, Difficulty.NORMAL, 100, WorldType.DEFAULT, true));
         sendPacket(new SpawnPosition(world.getSpawnPosition()));
+
+        sendPacket(new ServerPlayerPositionLook(0, 63, 0, 0, 0, 0, 1));
     }
 
     private void setCompression(final int threshold) {
