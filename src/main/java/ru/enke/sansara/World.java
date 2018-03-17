@@ -1,5 +1,6 @@
 package ru.enke.sansara;
 
+import ru.enke.minecraft.protocol.packet.data.game.Position;
 import ru.enke.minecraft.protocol.packet.server.game.TimeUpdate;
 import ru.enke.sansara.player.Player;
 import ru.enke.sansara.player.PlayerRegistry;
@@ -8,6 +9,7 @@ public class World extends PlayerRegistry implements Runnable {
 
     private static final int TIME_UPDATE_INTERVAL = 20;
 
+    private final Position spawnPosition = new Position(0, 63, 0);
     private final String name;
     private long age;
     private long time;
@@ -40,6 +42,10 @@ public class World extends PlayerRegistry implements Runnable {
 
     public long getAge() {
         return age;
+    }
+
+    public Position getSpawnPosition() {
+        return spawnPosition;
     }
 
 }
