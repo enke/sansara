@@ -6,21 +6,14 @@ public class Chunk {
 
     private final ChunkSection[] sections = new ChunkSection[16];
     private final int[] height = new int[256];
+    private final ChunkPosition position;
 
-    private final int x;
-    private final int z;
-
-    public Chunk(int x, int z) {
-        this.x = x;
-        this.z = z;
+    public Chunk(final ChunkPosition position) {
+        this.position = position;
     }
 
-    public int getX() {
-        return x;
-    }
-
-    public int getZ() {
-        return z;
+    public ChunkPosition getPosition() {
+        return position;
     }
 
     public ChunkSection[] getSections() {
