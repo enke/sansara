@@ -2,13 +2,14 @@ package ru.enke.sansara.chunk;
 
 import org.jetbrains.annotations.Nullable;
 
-import static ru.enke.sansara.chunk.array.BlockArray.BLOCK_ARRAY_LENGTH;
-import static ru.enke.sansara.chunk.array.NibbleArray.NIBLE_ARRAY_LENGTH;
+import java.util.Arrays;
+import java.util.Objects;
+
+import static ru.enke.sansara.chunk.ChunkSection.CHUNK_SECTION_LENGTH;
 
 public class Chunk {
 
     public static final int BIOMES_DATA_LENGTH = 256;
-    public static final int CHUNK_DATA_LENGTH = BLOCK_ARRAY_LENGTH * 2 + NIBLE_ARRAY_LENGTH * 2 + BIOMES_DATA_LENGTH;
 
     private final ChunkSection[] sections = new ChunkSection[16];
     private final int[] height = new int[256];
@@ -115,10 +116,15 @@ public class Chunk {
     }
 
     public byte[] getData() {
-        final byte[] data = new byte[CHUNK_DATA_LENGTH];
+        final int totalSectors = (int) Arrays.stream(sections).filter(Objects::nonNull).count();
+        final byte[] data = new byte[totalSectors * CHUNK_SECTION_LENGTH + 256];
         int currentIndex = 0;
 
         for(final ChunkSection section : sections) {
+            if(section == null) {
+                continue;
+            }
+
             for(final short block : section.getBlocks()) {
                 data[currentIndex++] = (byte) (block & 255);
                 data[currentIndex++] = (byte) (block >> 8);
@@ -131,11 +137,11 @@ public class Chunk {
             final byte[] skyLight = section.getSkyLight();
             System.arraycopy(skyLight, 0, data, currentIndex, skyLight.length);
             currentIndex += skyLight.length;
+        }
 
-            // TODO: Add biomes.
-            for(int i = 0; i < 256; ++i) {
-                data[currentIndex++] = 0;
-            }
+        // TODO: Add biomes.
+        for(int i = 0; i < 256; ++i) {
+            data[currentIndex++] = 0;
         }
 
         return data;
@@ -145,7 +151,9 @@ public class Chunk {
         short mask = 0;
 
         for(final ChunkSection section : sections) {
-            mask |= 1 << section.getY();
+            if(section != null) {
+                mask |= 1 << section.getY();
+            }
         }
 
         return mask;

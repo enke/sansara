@@ -3,7 +3,12 @@ package ru.enke.sansara.chunk;
 import ru.enke.sansara.chunk.array.BlockArray;
 import ru.enke.sansara.chunk.array.NibbleArray;
 
+import static ru.enke.sansara.chunk.array.BlockArray.BLOCK_ARRAY_LENGTH;
+import static ru.enke.sansara.chunk.array.NibbleArray.NIBLE_ARRAY_LENGTH;
+
 public class ChunkSection {
+
+    public static final int CHUNK_SECTION_LENGTH = BLOCK_ARRAY_LENGTH * 2 + NIBLE_ARRAY_LENGTH * 2;
 
     private final BlockArray blocks;
     private final NibbleArray blocksLight;

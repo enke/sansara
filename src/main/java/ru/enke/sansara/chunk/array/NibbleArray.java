@@ -2,7 +2,7 @@ package ru.enke.sansara.chunk.array;
 
 public class NibbleArray {
 
-    public static final int NIBLE_ARRAY_LENGTH = 4096;
+    public static final int NIBLE_ARRAY_LENGTH = 2048;
 
     private byte[] data;
 
@@ -10,7 +10,7 @@ public class NibbleArray {
         this(new byte[NIBLE_ARRAY_LENGTH]);
     }
 
-    public NibbleArray(byte[] data) {
+    public NibbleArray(final byte[] data) {
         this.data = data;
     }
 

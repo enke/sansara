@@ -1,6 +1,7 @@
 package ru.enke.sansara.network.session;
 
 import io.netty.channel.Channel;
+import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import org.apache.logging.log4j.LogManager;
@@ -13,11 +14,14 @@ import ru.enke.minecraft.protocol.packet.data.game.GameMode;
 import ru.enke.minecraft.protocol.packet.data.game.WorldType;
 import ru.enke.minecraft.protocol.packet.server.game.JoinGame;
 import ru.enke.minecraft.protocol.packet.server.game.SpawnPosition;
+import ru.enke.minecraft.protocol.packet.server.game.chunk.ChunkData;
 import ru.enke.minecraft.protocol.packet.server.game.player.ServerPlayerPositionLook;
 import ru.enke.minecraft.protocol.packet.server.login.LoginSetCompression;
 import ru.enke.minecraft.protocol.packet.server.login.LoginSuccess;
 import ru.enke.sansara.Server;
 import ru.enke.sansara.World;
+import ru.enke.sansara.chunk.Chunk;
+import ru.enke.sansara.chunk.ChunkPosition;
 import ru.enke.sansara.login.LoginProfile;
 import ru.enke.sansara.network.handler.MessageHandler;
 import ru.enke.sansara.network.handler.MessageHandlerRegistry;
@@ -109,7 +113,44 @@ public class Session extends SimpleChannelInboundHandler<PacketMessage> {
         sendPacket(new JoinGame(player.getId(), GameMode.SURVIVAL, 0, Difficulty.NORMAL, 100, WorldType.DEFAULT, true));
         sendPacket(new SpawnPosition(world.getSpawnPosition()));
 
-        sendPacket(new ServerPlayerPositionLook(0, 63, 0, 0, 0, 0, 1));
+        for(int x = -5; x <= 5; x++) {
+            for(int z = -5; z <= 5; z++) {
+                final Chunk chunk = createFlatChunk(x, z);
+                final ChunkPosition position = chunk.getPosition();
+
+                sendPacket(new ChunkData(position.getX(), position.getZ(), true, chunk.getMask(), chunk.getData()));
+            }
+        }
+
+        sendPacket(new ServerPlayerPositionLook(0, 256, 0, 0, 0, 0, 1));
+    }
+
+    private Chunk createFlatChunk(final int chunkX, final int chunkZ) {
+        final Chunk chunk = new Chunk(new ChunkPosition(chunkX, chunkZ));
+
+        for(int x = 0; x < 16; x++) {
+            for(int z = 0; z < 16; z++) {
+                for(int y = 0; y < 61; y++) {
+                    int id = 0;
+
+                    if (y == 60) {
+                        id = 2;
+                    } else if (y >= 55 && y < 60) {
+                        id = 3;
+                    } else if (y == 0) {
+                        id = 7;
+                    } else if (y < 55) {
+                        id = 1;
+                    }
+
+                    chunk.setBlockId(x, y, z, id);
+                    chunk.setBlockLight(x, y, z, 15);
+                    chunk.setSkyLight(x, y, z, 15);
+                }
+            }
+        }
+
+        return chunk;
     }
 
     private void setCompression(final int threshold) {
@@ -119,11 +160,12 @@ public class Session extends SimpleChannelInboundHandler<PacketMessage> {
     }
 
     public void sendPacket(final PacketMessage msg) {
-        if(logger.isTraceEnabled()) {
+        if(logger.isTraceEnabled() && !(msg instanceof ChunkData)) {
             logger.trace("Sending packet {}", msg);
         }
 
-        channel.writeAndFlush(msg);
+        channel.writeAndFlush(msg)
+                .addListener(ChannelFutureListener.FIRE_EXCEPTION_ON_FAILURE);
     }
 
     public SocketAddress getAddress() {

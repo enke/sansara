@@ -16,7 +16,7 @@ repositories {
 
 dependencies {
     compile 'org.apache.logging.log4j:log4j-core:2.10.0'
-    compile 'com.github.enke:minecraft-protocol:c0e7886e61'
+    compile 'com.github.enke:minecraft-protocol:4691c70db3'
     compile 'io.netty:netty-all:4.1.20.Final'
     compile 'org.jetbrains:annotations:15.0'
 
