@@ -2,7 +2,7 @@ package ru.enke.sansara.chunk.array;
 
 public class BlockArray {
 
-    private static final int BLOCK_ARRAY_LENGTH = 4096;
+    public static final int BLOCK_ARRAY_LENGTH = 4096;
 
     private final short[] data;
 

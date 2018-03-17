@@ -21,16 +21,16 @@ public class ChunkSection {
         this.skyLight = skyLight;
     }
 
-    public BlockArray getBlocks() {
-        return blocks;
+    public short[] getBlocks() {
+        return blocks.getData();
     }
 
-    public NibbleArray getBlocksLight() {
-        return blocksLight;
+    public byte[] getBlocksLight() {
+        return blocksLight.getData();
     }
 
-    public NibbleArray getSkyLight() {
-        return skyLight;
+    public byte[] getSkyLight() {
+        return skyLight.getData();
     }
 
     public int getY() {
